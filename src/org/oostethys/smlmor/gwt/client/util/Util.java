@@ -5,8 +5,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.mmisw.iserver.gwt.client.rpc.RegisteredOntologyInfo;
-import org.mmisw.iserver.gwt.client.vocabulary.Option;
+//import org.mmisw.iserver.gwt.client.rpc.RegisteredOntologyInfo;
+//import org.mmisw.iserver.gwt.client.vocabulary.Option;
 import org.oostethys.smlmor.gwt.client.Main;
 
 import com.google.gwt.http.client.URL;
@@ -24,11 +24,13 @@ import com.google.gwt.user.client.ui.TextArea;
 import com.google.gwt.user.client.ui.TextBox;
 import com.google.gwt.user.client.ui.TextBoxBase;
 import com.google.gwt.user.client.ui.UIObject;
+import org.oostethys.smlmor.gwt.client.rpc.RegisteredOntologyInfo;
+import org.oostethys.smlmor.gwt.client.vocabulary.Option;
 
 
 /**
  * Misc utilities.
- * 
+ *
  * @author Carlos Rueda
  */
 public class Util {
@@ -65,7 +67,7 @@ public class Util {
 	    }
 	    return params;
 	}
-	
+
 	static ButtonBase createButton(String str) {
 	    PushButton obj = new PushButton(str);
 	    setFontSize(obj, 10);
@@ -79,7 +81,7 @@ public class Util {
 	    }
 	    return obj;
 	}
-	
+
 	/** Ad hoc utility */
 	public static HTML createHtml(String str, int fontFize) {
 	    HTML obj = new HTML(str);
@@ -98,8 +100,8 @@ public class Util {
            return DOM.getIntStyleAttribute(
               uio.getElement(), "fontSize");
     }
-    
-    
+
+
     public static Panel createHtmlPre(String w, String h, String str, int fontSize) {
 		final HTML contents = Util.createHtml("<pre>" + str + "</pre>", 10);
 		ScrollPanel scroller = new ScrollPanel(contents);
@@ -110,7 +112,7 @@ public class Util {
 	    return decPanel;
     }
 
-    public static TextBoxBase createTextBoxBase(int nl, String width, 
+    public static TextBoxBase createTextBoxBase(int nl, String width,
 			ChangeListener cl) {
 		final TextBoxBase tb;
 		if ( nl <=1 ) {
@@ -148,7 +150,7 @@ public class Util {
 		}
 		return lb;
 	}
-	
+
     public static boolean isTestingOntology(RegisteredOntologyInfo oi) {
     	String authority = oi.getAuthority();
     	return authority.equalsIgnoreCase("mmitest")

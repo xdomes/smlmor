@@ -4,8 +4,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.mmisw.iserver.gwt.client.rpc.SparqlQueryResult;
+//import org.mmisw.iserver.gwt.client.rpc.SparqlQueryResult;
 import org.oostethys.smlmor.gwt.client.Main;
+import org.oostethys.smlmor.gwt.client.rpc.SparqlQueryResult;
 import org.oostethys.smlmor.gwt.client.rpc.model.AttributeModel;
 
 import com.google.gwt.core.client.GWT;
@@ -27,7 +28,7 @@ import com.google.gwt.user.client.ui.VerticalPanel;
 import com.google.gwt.user.client.ui.Widget;
 
 /**
- * 
+ *
  * @author Carlos Rueda
  */
 public class FieldWithChoose extends HorizontalPanel implements SourcesChangeEvents {
@@ -35,9 +36,9 @@ public class FieldWithChoose extends HorizontalPanel implements SourcesChangeEve
 	private TextBoxBase textBox;
 	PushButton chooseButton;
 	ChangeListener cl;
-	
+
 	private ChangeListenerCollection changeListeners;
-	
+
 	/**
 	 * Creates a field with a choose feature.
 	 * @param attr
@@ -46,7 +47,7 @@ public class FieldWithChoose extends HorizontalPanel implements SourcesChangeEve
 	public FieldWithChoose(AttributeModel attr, ChangeListener cl) {
 		this(attr, cl, "200px");
 	}
-	
+
 	/**
 	 * Creates a field with a choose feature.
 	 * @param attr
@@ -56,9 +57,9 @@ public class FieldWithChoose extends HorizontalPanel implements SourcesChangeEve
 	public FieldWithChoose(AttributeModel attr, ChangeListener cl, String textWidth) {
 		this.attr = attr;
 		this.cl = cl;
-		
+
 		addChangeListener(cl);
-		
+
 		int nl = 1;    /// attr.getNumberOfLines() is ignored
 		textBox = Util.createTextBoxBase(nl, textWidth, cl);
 		textBox.addChangeListener(new ChangeListener() {
@@ -68,13 +69,13 @@ public class FieldWithChoose extends HorizontalPanel implements SourcesChangeEve
 		});
 
 		add(textBox);
-		
+
 		chooseButton = new PushButton("Choose", new ClickListener() {
 			public void onClick(Widget sender) {
 				choose();
 			}
 		});
-		
+
 		add(chooseButton);
 	}
 
@@ -82,41 +83,42 @@ public class FieldWithChoose extends HorizontalPanel implements SourcesChangeEve
 	protected void optionSelected(Map<String, String> option) {
 	}
 
-	
+
 	private void _onChange() {
 		if (changeListeners != null) {
 			changeListeners.fireChange(textBox);
 		}
 	}
 
-	
+
 	/**
 	 * dispatches the selection of an option.
 	 */
 	private void choose() {
-		
+
 		String optionsVocab = attr.getOptionsVocabulary();
-		
+
 		final MyDialog waitPopup = new MyDialog(Util.createHtml("Getting URIs for " +
 				optionsVocab+ " ...", 12),
 				false    // No "Close" button
-		);   
+		);
 		waitPopup.setHTML("<img src=\"" +GWT.getModuleBaseURL()+ "images/loading.gif\"> <i>Please wait</i>");
 		waitPopup.center();
 		waitPopup.show();
 
-		
+
 		/*
 		 * 2011-10-12: removed the rdfs:label part because the CF ontology does no contain such attribute
-		 * in its latest versions.  
-		 * TODO Besides, all of this is just preliminary; a more generic mechanism is still pending to 
+		 * in its latest versions.
+		 * TODO Besides, all of this is just preliminary; a more generic mechanism is still pending to
 		 * gather information for each possible option.
 		 */
-		String queryString = 				
+		String queryString =
 			" PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>\n" +
 			" PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>\n" +
 			" PREFIX owl: <http://www.w3.org/2002/07/owl#>\n" +
-			" SELECT DISTINCT ?label ?uri \n" +
+			" SELECT DISTINCT ?uri \n" +
+//			" SELECT DISTINCT ?label ?uri \n" +
 			" WHERE { \n" +
 			"     ?uri rdf:type <" +optionsVocab+ "> . \n" +
 //			"     ?uri rdfs:label ?label . \n" +
@@ -124,46 +126,47 @@ public class FieldWithChoose extends HorizontalPanel implements SourcesChangeEve
 //			" ORDER BY ASC(?label) "
 			" ORDER BY ASC(?uri) "
 			;
-		
+
 		Main.log("queryString:\n" +queryString);
-		
+
 		SparqlUtil.runQuery(queryString , new SparqlUtil.ResponseHandler() {
 
 			public void onError(String error) {
+				Main.log("onError error=" + error);
 				enable(true);
 				Main.log(error);
 			}
 
 			public void onFailure(Throwable caught) {
-				Main.log("FAILURE");
+				Main.log("onFailure caught=" + caught);
 				String error = caught.getMessage();
 				onError(error);
 			}
 
 			public void responseObtained(SparqlQueryResult sparqlQueryResult) {
-				Main.log("responseObtained");
+				Main.log("responseObtained"); // sparqlQueryResult=" + sparqlQueryResult);
 				enable(true);
 //				dispatchResponse(sparqlQueryResult);
 				dispatchOptions(sparqlQueryResult.getParsedResult().values, waitPopup);
 			}
-			
+
 		});
 
-		
+
 	}
-	
+
 	private void dispatchOptions(final List<Map<String,String>> options, final MyDialog waitPopup) {
-		Main.log("Dispatching options");
-		
+		Main.log("Dispatching options"); //=" + options);
+
 		final String width = "500px";
-		
+
 		final ListBox listBox = createListBox(options, cl);
 		listBox.setWidth(width);
-		
+
 		VerticalPanel vp = new VerticalPanel();
-		
+
 		final MyDialog popup = new MyDialog(vp);
-		
+
 		listBox.setVisibleItemCount(Math.min(options.size(), 12));
 		// make sure no item is selected so we get an change event on the first item (needed for firefox at least):
 		// (see issue #138: Can't select AGU as authority abbreviation)
@@ -173,7 +176,7 @@ public class FieldWithChoose extends HorizontalPanel implements SourcesChangeEve
 			public void onChange(Widget sender) {
 				String value = listBox.getValue(listBox.getSelectedIndex());
 				textBox.setText(value);
-				
+
 				Map<String, String> option = options.get(listBox.getSelectedIndex());
 				optionSelected(option);
 
@@ -182,13 +185,13 @@ public class FieldWithChoose extends HorizontalPanel implements SourcesChangeEve
 				popup.hide();
 			}
 		});
-		
+
 		/////////////////////////////////////////////////////////
 		// Use a SuggestBox with a MultiWordSuggestOracle.
 		//
 		// A map from a suggestion to its corresponding Option:
 		final Map<String,Map<String, String>> suggestions = new HashMap<String,Map<String, String>>();
-		MultiWordSuggestOracle oracle = new MultiWordSuggestOracle("/ :-_"); 
+		MultiWordSuggestOracle oracle = new MultiWordSuggestOracle("/ :-_");
 		for ( Map<String, String> option : options ) {
 			String suggestion = _getSuggestion(option);
 			suggestions.put(suggestion, option);
@@ -204,38 +207,38 @@ public class FieldWithChoose extends HorizontalPanel implements SourcesChangeEve
 				Map<String, String> option = suggestions.get(suggestion);
 				textBox.setText(option.get("uri"));
 				optionSelected(option);
-				
+
 				_onChange();
-				
+
 				popup.hide();
 			}
 		});
 		////////////////////////////////////////////////////////////
-		
+
 		vp.add(suggestBox);
 		vp.add(listBox);
-		
+
 		waitPopup.hide();
-		
+
 		// use a timer to request for focus in the suggest-box:
 		new Timer() {
 			public void run() {
 				suggestBox.setFocus(true);
 			}
 		}.schedule(700);
-		    
+
 		popup.setText("Select " +attr.getLabel());
 		popup.center();
 		popup.show();
 
 	}
-	
-	
-	
+
+
+
     private static String _getSuggestion(Map<String, String> option) {
 		String label = option.get("label");
 		String uri = option.get("uri");
-		
+
 		/*
 		 * If no label given, use last part of the URI:
 		 */
@@ -252,7 +255,7 @@ public class FieldWithChoose extends HorizontalPanel implements SourcesChangeEve
 				label = null;
 			}
 		}
-		
+
 		String suggestion = (label == null) ? uri : label+ " - " +uri;
 		return suggestion;
 	}
@@ -280,7 +283,7 @@ public class FieldWithChoose extends HorizontalPanel implements SourcesChangeEve
 		textBox.setText(value);
 //		lb.setSelectedIndex(0);
 	}
-	
+
 	public String getValue() {
 		return textBox.getText();
 	}
@@ -302,5 +305,5 @@ public class FieldWithChoose extends HorizontalPanel implements SourcesChangeEve
 			changeListeners.remove(listener);
 		}
 	}
-	
+
 }

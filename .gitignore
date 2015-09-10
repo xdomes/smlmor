@@ -1,0 +1,4 @@
+build.properties
+_generated/
+www/
+*.iml
