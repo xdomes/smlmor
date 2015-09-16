@@ -2,8 +2,9 @@ package org.oostethys.smlmor.gwt.client;
 
 import java.util.Map;
 
-import org.mmisw.iserver.gwt.client.rpc.AppInfo;
+//import org.mmisw.iserver.gwt.client.rpc.AppInfo;
 import org.oostethys.smlmor.gwt.client.img.SmlMorImageBundle;
+import org.oostethys.smlmor.gwt.client.rpc.AppInfo;
 import org.oostethys.smlmor.gwt.client.rpc.SmlMorService;
 import org.oostethys.smlmor.gwt.client.rpc.SmlMorServiceAsync;
 import org.oostethys.smlmor.gwt.client.rpc.model.BasicModels;
@@ -26,26 +27,26 @@ import com.google.gwt.user.client.ui.Widget;
 
 /**
  * The entry point for the application
- * 
+ *
  * @author Carlos Rueda
  */
 public class Main implements EntryPoint {
-	
+
 	public String footer;
-	
+
 	private static String baseUrl;
-	
+
 	public static SmlMorImageBundle images = (SmlMorImageBundle) GWT.create(SmlMorImageBundle.class);
 
 	private static AppInfo appInfo;
-	
+
 	static BasicModels basicModels;
-	
+
 	private static boolean includeLog;
-	
-	
+
+
 	public static SmlMorServiceAsync smlmorService;
-	
+
 
 	/**
 	 * This is the entry point method.
@@ -58,23 +59,23 @@ public class Main implements EntryPoint {
       baseUrl = Util.getLocationProtocol() + "//" + Util.getLocationHost();
       baseUrl = baseUrl.replace("/+$", "");   // remove trailing slashes
       log("baseUrl = " +baseUrl);
-      
+
       Map<String,String> params = Util.getParams();
-	  
+
       if ( params != null ) {
           String _log = (String) params.get("_log");
           if ( _log != null ) {
               includeLog = true;
               params.remove("_log");
           }
-          
+
       }
-      
+
       getSmlMorService();
       getAppInfo(params);
   }
-  
-  
+
+
   private void startGui(final Map<String,String> params) {
 
 	  MainPanel mainPanel = new MainPanel();
@@ -82,12 +83,12 @@ public class Main implements EntryPoint {
 	  RootPanel.get().add(hp);
 	  // TODO logo
 //	  hp.add(Main.images.logo().createImage());
-	  
+
 	  if ( false ) {
 		  TestSparqlPanel sparqlPanel = new TestSparqlPanel();
 		  RootPanel.get().add(sparqlPanel.getWidget());
 	  }
-	  
+
 	  RootPanel.get().add(mainPanel.getWidget());
 
       if ( includeLog ) {
@@ -107,14 +108,14 @@ public class Main implements EntryPoint {
                   });
           RootPanel.get().add(buttonLog);
           RootPanel.get().add(buttonClear);
-          RootPanel.get().add(logLabel);    
+          RootPanel.get().add(logLabel);
       }
       else {
           log.setLength(0);
       }
       RootPanel.get().add(Util.createHtml("<font color=\"gray\">" +footer+ "</font><br/><br/>", 10));
   }
-  
+
   private static void getSmlMorService() {
 	  String moduleRelativeURL = GWT.getModuleBaseURL() + "smlmorService";
       log("Getting " +moduleRelativeURL+ " ...");
@@ -123,9 +124,9 @@ public class Main implements EntryPoint {
       endpoint.setServiceEntryPoint(moduleRelativeURL);
       log("   smlmorService " +smlmorService);
   }
-  
-  
-  
+
+
+
 	private void getAppInfo(final Map<String, String> params) {
 		AsyncCallback<AppInfo> callback = new AsyncCallback<AppInfo>() {
 			public void onFailure(Throwable thr) {
@@ -148,7 +149,7 @@ public class Main implements EntryPoint {
 		smlmorService.getAppInfo(callback);
 	}
 
-  
+
 	private void getModels(final Map<String, String> params) {
 		AsyncCallback<BasicModels> callback = new AsyncCallback<BasicModels>() {
 			public void onFailure(Throwable thr) {
@@ -172,7 +173,7 @@ public class Main implements EntryPoint {
 		smlmorService.getModels(callback);
 	}
 
-  
+
 	// always write to this buffer, but show contents if includeLog is true
 	private static final StringBuffer log = new StringBuffer();
 
